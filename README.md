@@ -7,10 +7,10 @@ M4CRO works by taking the input text, scanning it, looking for directives and de
 To give a trivial example, suppose the input file contains the following text:
 
 ```
-This is a simple text of M4CRO preprocessor
+GREETINGS! This is a simple text of M4CRO preprocessor
 define( 'GREETINGS', 'Hello World!' )
 1. GREETINGS
-2. GREETINGS
+2. Greetings
 3. GREETINGS
 This is a test, this is only a test.
 ```
@@ -18,14 +18,20 @@ This is a test, this is only a test.
 After processing this text, M4CRO would generate the following output:
 
 ```
-This is a simple text of M4CRO preprocessor
+GREETINGS! This is a simple text of M4CRO preprocessor
 1. Hello World!
-2. Hello World!
+2. Greetings
 3. Hello World!
 This is a test, this is only a test.
 ```
 
-As you could have guessed, M4CRO scans the input text, and when it encounters the line that starts with **define** it creates a rule that has the effect of substituting the text **GREETINGS** with the text **Hello World!**. From that point on, whenever it encounters the text **GREETINGS**, it replaces it with **Hello World!**. The rest of the text gets transferred to the output as it is.
+As you could have guessed, M4CRO scans the input text, transferring the characters into the output text, one by one. When it encounters the line that contains the **define** directive, it creates a rule that has the effect of substituting the text **GREETINGS** with the text **Hello World!**. From that point on, whenever it encounters the text **GREETINGS**, it replaces it with **Hello World!**. The rest of the text gets transferred to the output as it is.
+
+M4CRO is a one-pass processor: when it encounters a directive like **define** in the example above, it applies the rule to the remaining text, but that rule has no effect on the text that has already been processed. 
+
+M4CRO is case-sensitive: in the example above, the rule has been created to substitute the text **GREETINGS** only, and that rule has no effect on other versions of the same word, such as **Greetings**, which remain unchanges.
+
+M4CRO is a recursive processor: when it performs a text substitution according to one of the rules, before appending it to the output text, it scans the resultant text again for other rules that could have appeared as the result of the substitution. It does the repeat scanning until no more substitutions have been performed, and the resultant text becomes a stable part of the output. To prevent infinite loops, M4CRO has some reasonable limit for the recursion levels, and generates an error if this limit is reached.
 
 M4CRO can be used in your PHP files as follows:
 
@@ -47,4 +53,5 @@ It can also be used on the command line, by executing the m4cro.php script with 
 $ php ./m4cro.php path_in path_out
 
 ```
+
 
